@@ -1,4 +1,4 @@
-const { Schema, model, Types } = require('mongoose');
+const { Schema, model } = require('mongoose');
 
 const UserSchema = new Schema (
     {
@@ -12,7 +12,11 @@ const UserSchema = new Schema (
             type: String,
             required: true,
             unique: true,
-            //validataion: //figure this out
+            validator: { $or: 
+                [
+                    { email: { $regex: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/ } }
+                ]
+            }
         },
         thoughts: [
             {
@@ -33,7 +37,7 @@ const UserSchema = new Schema (
 
 //make virtual to count number of thoughts attached to a user
 UserSchema.virtual('friendCount').get(function () {
-    return this.thoughts.reduce((total, thought) => total + thought.length + 1,0);
+    return this.thoughts.length;
 });
 
 //make model out of schema
